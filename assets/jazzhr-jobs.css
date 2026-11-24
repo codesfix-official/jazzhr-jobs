@@ -1,0 +1,373 @@
+/* =========================================================
+   JAZZHR JOB BOARD
+   ========================================================= */
+
+#jazzhr-jobs {
+	width: 100%;
+}
+
+
+/* =========================================================
+   FILTER BUTTONS
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-state-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 45px;
+    justify-content: center;
+}
+
+
+#jazzhr-jobs .jazzhr-filter-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 0 24px;
+	border: 1px solid #F6BC15;
+	border-radius: 4px;
+	background: transparent;
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 20px;
+	letter-spacing: 0.15px;
+	color: #2E353A;
+	cursor: pointer;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+
+#jazzhr-jobs .jazzhr-filter-button:hover,
+#jazzhr-jobs .jazzhr-filter-button.is-active {
+	background: #F6BC15;
+	color: #2E353A;
+	border-color: #F6BC15;
+}
+
+
+/* =========================================================
+   JOB GRID
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-grid {
+	display: grid;
+	grid-template-columns:
+		repeat(4, minmax(0, 1fr));
+	gap: 0px;
+	width: 100%;
+}
+
+
+/* =========================================================
+   JOB CARD
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	height: 100%;        /* Equal height cards. */
+	min-height: 280px;
+	padding: 32px;
+	box-sizing: border-box;
+	background-color: #fff;
+	border: 1px solid #D9DEE1;
+	border-radius: 0px;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+#jazzhr-jobs .jazzhr-card:nth-child(8n + 2),
+#jazzhr-jobs .jazzhr-card:nth-child(8n + 4),
+#jazzhr-jobs .jazzhr-card:nth-child(8n + 5),
+#jazzhr-jobs .jazzhr-card:nth-child(8n + 7) {
+	background-color: #F0F0F0;
+}
+
+#jazzhr-jobs .jazzhr-card:hover {
+	transform: translateY(-3px);
+	box-shadow:
+		0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   CARD CONTENT
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-card-content {
+	flex: 1;
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-card-title {
+	margin: 0 0 22px;
+	font-family: 'Inter', sans-serif;
+	font-style: normal;
+	font-weight: 600;
+	font-size: 24px;
+	line-height: 32px;
+	letter-spacing: 0.9px;
+	color: #454E54;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-card-location-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#jazzhr-jobs .jazzhr-card-location {
+	margin: 0;
+	font-family: 'Inter', sans-serif;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 15px;
+	line-height: 24px;
+	letter-spacing: 0.9px;
+	color: #454E54;
+}
+
+
+/* =========================================================
+   CARD FOOTER
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-card-footer {
+	margin-top: auto;
+	padding-top: 28px;
+}
+
+
+/* =========================================================
+   VIEW DETAILS
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-view-details {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: 'Inter', sans-serif;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 15px;
+	line-height: 18px;
+	letter-spacing: 0.15px;
+
+	color: #169FDA;
+	text-decoration: none !important;
+
+	cursor: pointer;
+}
+
+#jazzhr-jobs .jazzhr-view-details:hover {
+	color: #169FDA;
+	text-decoration: none !important;
+}
+
+
+/* =========================================================
+   ARROW
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-arrow {
+	display: inline-block;
+	font-family: Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 400;
+	line-height: 18px;
+	color: #169FDA;
+
+	transition: transform 0.2s ease;
+}
+
+#jazzhr-jobs .jazzhr-view-details:hover .jazzhr-arrow {
+	transform: translateX(4px);
+}
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-pagination {
+	display: flex;
+
+	flex-wrap: wrap;
+
+	align-items: center;
+
+	justify-content: center;
+
+	gap: 8px;
+
+	margin-top: 45px;
+}
+
+
+#jazzhr-jobs .jazzhr-pagination-button {
+	display: inline-flex;
+
+	align-items: center;
+
+	justify-content: center;
+
+	min-width: 42px;
+
+	height: 42px;
+
+	padding: 0 12px;
+
+	border: 1px solid #D9DEE1;
+
+	border-radius: 4px;
+
+	background: #fff;
+
+	font-family: 'Inter', sans-serif;
+
+	font-size: 14px;
+
+	font-weight: 500;
+
+	color: #454E54;
+
+	cursor: pointer;
+}
+
+
+#jazzhr-jobs .jazzhr-pagination-button:hover,
+#jazzhr-jobs .jazzhr-pagination-button.is-active {
+	background: #169FDA;
+
+	border-color: #169FDA;
+
+	color: #fff;
+}
+
+
+#jazzhr-jobs .jazzhr-pagination-button:disabled {
+	opacity: 0.4;
+
+	cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+#jazzhr-jobs .jazzhr-message {
+	margin: 25px 0;
+
+	font-family: 'Inter', sans-serif;
+
+	font-size: 16px;
+}
+
+
+#jazzhr-jobs .jazzhr-error {
+	color: #b42318;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1199px) {
+
+	#jazzhr-jobs .jazzhr-grid {
+		grid-template-columns:
+			repeat(3, minmax(0, 1fr));
+	}
+
+}
+
+
+@media (max-width: 991px) {
+
+	#jazzhr-jobs .jazzhr-grid {
+		grid-template-columns:
+			repeat(2, minmax(0, 1fr));
+	}
+    
+    #jazzhr-jobs .jazzhr-card {
+		background-color: #FFFFFF;
+	}
+
+	#jazzhr-jobs .jazzhr-card:nth-child(4n + 2),
+	#jazzhr-jobs .jazzhr-card:nth-child(4n + 3) {
+		background-color: #F0F0F0;
+	}
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+	#jazzhr-jobs .jazzhr-state-filters {
+		gap: 10px;
+		margin-bottom: 30px;
+	}
+
+
+	#jazzhr-jobs .jazzhr-filter-button {
+		width: 100%;
+		min-height: 46px;
+	}
+
+
+	#jazzhr-jobs .jazzhr-grid {
+		grid-template-columns: 1fr;
+		gap: 0px;
+	}
+
+
+	#jazzhr-jobs .jazzhr-card {
+		min-height: 240px;
+		padding: 25px;
+        background-color: #FFFFFF !important;
+	}
+
+    #jazzhr-jobs .jazzhr-card:nth-child(even) {
+		background-color: #F0F0F0 !important;
+	}
+
+
+	#jazzhr-jobs .jazzhr-card-title {
+		font-size: 22px;
+		line-height: 30px;
+		margin-bottom: 18px;
+	}
+
+
+	#jazzhr-jobs .jazzhr-card-location {
+		font-size: 15px;
+		line-height: 24px;
+	}
+
+
+	#jazzhr-jobs .jazzhr-card-footer {
+		margin-top: 30px;
+	}
+
+}
