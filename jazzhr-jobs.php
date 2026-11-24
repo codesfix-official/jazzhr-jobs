@@ -2,7 +2,8 @@
 /**
  * Plugin Name: JazzHR Jobs Integration
  * Description: Fetches open jobs from JazzHR and exposes them through a WordPress REST API.
- * Version: 1.0.0
+ * Version: 1.0.1
+ * Author: Umer Irshad
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,6 +29,7 @@ if ( ! defined( 'JAZZHR_API_KEY' ) ) {
 define( 'JAZZHR_API_BASE', 'https://api.resumatorapi.com/v1' );
 define( 'JAZZHR_CACHE_KEY', 'jazzhr_open_jobs_v1' );
 define( 'JAZZHR_CACHE_TIME', 15 * MINUTE_IN_SECONDS );
+define( 'JAZZHR_CACHE_LOCK_TIME', 30 );
 
 
 /**
@@ -106,6 +108,25 @@ function jazzhr_get_jobs_from_api() {
 		return $cached_jobs;
 	}
 
+	/*
+	 * Prevent concurrent public requests from all requesting the upstream API
+	 * when the cache is cold. The lock is deliberately short-lived so a failed
+	 * request cannot block the job board for an extended period.
+	 */
+	if ( get_transient( JAZZHR_CACHE_KEY . '_lock' ) ) {
+		return new WP_Error(
+			'jazzhr_refresh_in_progress',
+			'Jobs are temporarily unavailable. Please try again shortly.',
+			array( 'status' => 503 )
+		);
+	}
+
+	set_transient(
+		JAZZHR_CACHE_KEY . '_lock',
+		1,
+		JAZZHR_CACHE_LOCK_TIME
+	);
+
 	/**
 	 * JazzHR endpoint for open jobs.
 	 *
@@ -135,13 +156,12 @@ function jazzhr_get_jobs_from_api() {
 	 * Request-level error.
 	 */
 	if ( is_wp_error( $response ) ) {
+		delete_transient( JAZZHR_CACHE_KEY . '_lock' );
+
 		return new WP_Error(
 			'jazzhr_request_failed',
 			'Unable to connect to JazzHR.',
-			array(
-				'status'  => 502,
-				'details' => $response->get_error_message(),
-			)
+			array( 'status' => 502 )
 		);
 	}
 
@@ -152,19 +172,20 @@ function jazzhr_get_jobs_from_api() {
 	 * JazzHR returned an error.
 	 */
 	if ( $status_code < 200 || $status_code >= 300 ) {
+		delete_transient( JAZZHR_CACHE_KEY . '_lock' );
+
 		return new WP_Error(
 			'jazzhr_api_error',
 			'JazzHR API returned an error.',
-			array(
-				'status'  => 502,
-				'details' => $body,
-			)
+			array( 'status' => 502 )
 		);
 	}
 
 	$data = json_decode( $body, true );
 
 	if ( null === $data && JSON_ERROR_NONE !== json_last_error() ) {
+		delete_transient( JAZZHR_CACHE_KEY . '_lock' );
+
 		return new WP_Error(
 			'jazzhr_invalid_json',
 			'JazzHR returned invalid JSON.',
@@ -174,17 +195,34 @@ function jazzhr_get_jobs_from_api() {
 		);
 	}
 
+	if ( ! is_array( $data ) ) {
+		delete_transient( JAZZHR_CACHE_KEY . '_lock' );
+
+		return new WP_Error(
+			'jazzhr_invalid_response',
+			'JazzHR returned an unexpected response.',
+			array( 'status' => 502 )
+		);
+	}
+
 	/**
 	 * Some APIs return the jobs directly as an array.
 	 * Keep this flexible in case JazzHR wraps them.
 	 */
 	if ( isset( $data['jobs'] ) && is_array( $data['jobs'] ) ) {
 		$jobs = $data['jobs'];
-	} elseif ( is_array( $data ) ) {
+	} elseif ( jazzhr_is_list( $data ) ) {
 		$jobs = $data;
 	} else {
 		$jobs = array();
 	}
+
+	$jobs = array_values(
+		array_filter(
+			$jobs,
+			'is_array'
+		)
+	);
 
 	/**
 	 * Normalize jobs before caching.
@@ -206,6 +244,8 @@ function jazzhr_get_jobs_from_api() {
 		)
 	);
 
+	delete_transient( JAZZHR_CACHE_KEY . '_lock' );
+
 	/**
 	 * Cache for 15 minutes.
 	 */
@@ -216,6 +256,31 @@ function jazzhr_get_jobs_from_api() {
 	);
 
 	return $jobs;
+}
+
+/**
+ * Determine whether an array has sequential numeric keys.
+ *
+ * @param mixed $value Value to inspect.
+ * @return bool
+ */
+function jazzhr_is_list( $value ) {
+
+	if ( ! is_array( $value ) ) {
+		return false;
+	}
+
+	$expected_key = 0;
+
+	foreach ( array_keys( $value ) as $key ) {
+		if ( $key !== $expected_key ) {
+			return false;
+		}
+
+		$expected_key++;
+	}
+
+	return true;
 }
 
 
@@ -229,7 +294,11 @@ function jazzhr_normalize_job( $job ) {
 
 	$get_value = function ( $keys ) use ( $job ) {
 		foreach ( $keys as $key ) {
-			if ( isset( $job[ $key ] ) && '' !== $job[ $key ] ) {
+			if (
+				isset( $job[ $key ] ) &&
+				is_scalar( $job[ $key ] ) &&
+				'' !== $job[ $key ]
+			) {
 				return $job[ $key ];
 			}
 		}
@@ -445,4 +514,5 @@ function jazzhr_rest_get_jobs( WP_REST_Request $request ) {
  */
 function jazzhr_clear_jobs_cache() {
 	delete_transient( JAZZHR_CACHE_KEY );
+	delete_transient( JAZZHR_CACHE_KEY . '_lock' );
 }
